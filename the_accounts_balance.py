@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import random
+import operator
 
 def generate_target_number():
     """
@@ -34,19 +35,35 @@ def user_number_choice(list_of_balance_numbers):
 
 
 def choose_operator():
+    operator_map = {
+        '+': operator.add,
+        '-': operator.sub,
+        '*': operator.mul,
+        '/': operator.truediv
+    }
+
     while True:
         user_choice = input('Please choose the operator (+, -, *, /): ')
-        if user_choice in ['+', '-', '*', '/']:
-            return user_choice
+        if user_choice in operator_map:
+            return user_choice, operator_map[user_choice]
         else:
             print("Please enter a valid operator.")
 
+def calculate_operation(chosen_numbers, cal_operator):
+    x, y = chosen_numbers
+    return cal_operator(x, y)
+
+
+def result_display(chosen_numbers, op_symb, result):
+    print(f"Result of {chosen_numbers[0]} {op_symb} {chosen_numbers[1]} = {result}")
 
 def main():
     generate_target_number()
     list_balance_numbers = generate_balance_numbers()
     chosen_numbers, new_list_of_balance_number = user_number_choice(list_balance_numbers)
-    operator = choose_operator()
+    symbol, chosen_operator = choose_operator()
+    result = calculate_operation(chosen_numbers, chosen_operator)
+    result_display(chosen_numbers, symbol, result)
 
 
 
