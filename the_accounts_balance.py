@@ -39,7 +39,7 @@ def choose_operator():
         '+': operator.add,
         '-': operator.sub,
         '*': operator.mul,
-        '/': operator.truediv
+        '/': operator.floordiv
     }
 
     while True:
@@ -49,22 +49,37 @@ def choose_operator():
         else:
             print("Please enter a valid operator.")
 
-def calculate_operation(chosen_numbers, cal_operator):
+def calculate_operation(chosen_numbers, cal_operator, list_of_balance_numbers):
     x, y = chosen_numbers
-    return cal_operator(x, y)
+    result = cal_operator(x, y)
+    list_of_balance_numbers.append(result)
+    return result, list_of_balance_numbers
 
 
-def result_display(chosen_numbers, op_symb, result):
-    print(f"Result of {chosen_numbers[0]} {op_symb} {chosen_numbers[1]} = {result}")
+def result_display(chosen_numbers, op_symb, result, target_number):
+    print(f"\nResult of {chosen_numbers[0]} {op_symb} {chosen_numbers[1]} = {result}")
+    print(f"\nThe target number is {target_number} ")
+
+
+def ask_continue():
+    while True:
+        input_choice = input("Do you want to continue? y/n: ").lower().strip()
+        if input_choice == 'y':
+            return True
+        else:
+            print('You ended the programme! See you next time!')
+            return False
+
 
 def main():
-    generate_target_number()
+    target = generate_target_number()
     list_balance_numbers = generate_balance_numbers()
-    chosen_numbers, new_list_of_balance_number = user_number_choice(list_balance_numbers)
-    symbol, chosen_operator = choose_operator()
-    result = calculate_operation(chosen_numbers, chosen_operator)
-    result_display(chosen_numbers, symbol, result)
-
+    print(f"\nThe target number is {target}  <======")
+    while ask_continue():
+        chosen_numbers, new_list_of_balance_number = user_number_choice(list_balance_numbers)
+        symbol, chosen_operator = choose_operator()
+        result, updated_list_of_numbers = calculate_operation(chosen_numbers, chosen_operator, new_list_of_balance_number)
+        result_display(chosen_numbers, symbol, result, target)
 
 
 if __name__=='__main__':
