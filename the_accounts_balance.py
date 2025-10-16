@@ -33,11 +33,22 @@ def user_number_choice(list_of_balance_numbers):
             print("Please enter valid integers separated by space.")
 
 
+def choose_operator():
+    while True:
+        user_choice = input('Please choose the operator (+, -, *, /): ')
+        if user_choice in ['+', '-', '*', '/']:
+            return user_choice
+        else:
+            print("Please enter a valid operator.")
+
+
 def main():
     generate_target_number()
     list_balance_numbers = generate_balance_numbers()
-    user_numbers = user_number_choice(list_balance_numbers)
-    print(user_numbers)
+    chosen_numbers, new_list_of_balance_number = user_number_choice(list_balance_numbers)
+    operator = choose_operator()
+
+
 
 if __name__=='__main__':
     main()
