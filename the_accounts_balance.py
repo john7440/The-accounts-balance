@@ -3,6 +3,57 @@
 
 import random
 import operator
+import itertools
+
+
+def bot_solver(numbers, target):
+    """
+    This function try to solve the equation of finding
+    the target number with balance numbers.
+    :param numbers: the list of balance numbers.
+    :param target:the target number.
+    :return: the best path to solve this.
+    """
+    operators_map = {
+        '+': operator.add,
+        '-': operator.sub,
+        '*': operator.mul,
+        '/': operator.floordiv
+    }
+
+    best_diff = float('inf')
+    best_path = None
+
+    def recursive_function(nums, path):
+        """
+        This recursive function is used to solve the equation with
+        combinations from itertools.
+        :param nums: the list of balance numbers.
+        :param path: a list of combinations.
+        """
+        nonlocal best_diff, best_path
+        if len(nums) == 1:
+            difference = abs(nums[0] - target)
+            if difference < best_diff:
+                best_diff = difference
+                best_path = path
+            return
+
+        for x,y in itertools.combinations(nums, 2):
+            for symb, func in operators_map.items():
+                try:
+                    result = func(x,y)
+                    if result < 0 or result != int(result):
+                        continue
+                    new_nums = [n for n in nums if n != x and n != y] + [result]
+                    new_path = path + [(x, symb, y, result)]
+                    recursive_function(new_nums, new_path)
+                except ZeroDivisionError:
+                    continue
+
+    recursive_function(numbers, [])
+    return best_path
+
 
 def generate_target_number():
     """
@@ -97,15 +148,32 @@ def ask_continue():
     """
     This function asks the user if they want to continue.
     If not the program ends.
-    :return: boolean
+    :return: boolean.
     """
     while True:
         input_choice = input("Do you want to continue? y/n: ").lower().strip()
         if input_choice == 'y':
             return True
         else:
-            print('You ended the programme! See you next time!')
+            print('You ended the program! See you next time!')
             return False
+
+
+def show_bot_solution(list_of_number, target):
+    """
+    This function shows the bot's solution.
+    :param list_of_number: the list of balance numbers.
+    :param target: the target number.
+    :return: the solution or the closest one.
+    """
+    solution = bot_solver(list_of_number, target)
+    if solution:
+        print("\n🤖 Bot's suggested solution:")
+        for step in solution:
+            x, symb, y, result = step
+            print(f"-> {x} {symb} {y} = {result}")
+    else:
+        print("No solution found by the bot.")
 
 
 def main():
@@ -115,11 +183,19 @@ def main():
     target = generate_target_number()
     list_balance_numbers = generate_balance_numbers()
     print(f"\nThe target number is {target}  <======")
+    print(f"Initial balance numbers: {list_balance_numbers}")
+
+    # Player loop
     while ask_continue():
         chosen_numbers, new_list_of_balance_number = user_number_choice(list_balance_numbers)
         symbol, chosen_operator = choose_operator()
         result, updated_list_of_numbers = calculate_operation(chosen_numbers, chosen_operator, new_list_of_balance_number)
         result_display(chosen_numbers, symbol, result, target)
+
+    # Solution
+    show_solution = input("\n💡 Would you like to see the solution?  (y/n): ").lower().strip()
+    if show_solution == 'y':
+        show_bot_solution(list_balance_numbers, target)
 
 
 if __name__=='__main__':
