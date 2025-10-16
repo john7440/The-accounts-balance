@@ -13,6 +13,11 @@ def generate_target_number():
 
 
 def generate_balance_numbers():
+    """
+    This function generates 2 random balance numbers between 1 and 10,
+    and add it to a list of balance numbers.
+    :return: the list of balance numbers.
+    """
     list_of_balance_numbers = [random.randint(1,10),
                                random.randint(1,10),
                                25, 50, 75, 100]
@@ -20,6 +25,12 @@ def generate_balance_numbers():
 
 
 def user_number_choice(list_of_balance_numbers):
+    """
+    This function asks the user to choose 2 number of balance numbers and
+    check if they are valid.
+    :param list_of_balance_numbers: the actual list of balance numbers.
+    :return: the choice of the user.
+    """
     while True:
         try:
             user_input = input(f"Which number would you like to balance? choose 2 in {list_of_balance_numbers} ").split()
@@ -35,6 +46,10 @@ def user_number_choice(list_of_balance_numbers):
 
 
 def choose_operator():
+    """
+    This function asks the user to choose an operator and return it.
+    :return: an operator.
+    """
     operator_map = {
         '+': operator.add,
         '-': operator.sub,
@@ -49,7 +64,16 @@ def choose_operator():
         else:
             print("Please enter a valid operator.")
 
+
 def calculate_operation(chosen_numbers, cal_operator, list_of_balance_numbers):
+    """
+    This function calculates the operation, returns the result
+    and add it to the list of balance numbers.
+    :param chosen_numbers: the number chosen by the user.
+    :param cal_operator: the operator chosen by the user.
+    :param list_of_balance_numbers: the actual list of balance numbers.
+    :return: the calculated operation, the updated list of balance numbers.
+    """
     x, y = chosen_numbers
     result = cal_operator(x, y)
     list_of_balance_numbers.append(result)
@@ -57,11 +81,24 @@ def calculate_operation(chosen_numbers, cal_operator, list_of_balance_numbers):
 
 
 def result_display(chosen_numbers, op_symb, result, target_number):
+    """
+    This function displays the result
+    :param chosen_numbers: the number chosen by the user.
+    :param op_symb: the operator symbol chosen by the user.
+    :param result: the result of the calculation.
+    :param target_number: the target number.
+    :return: formated strings.
+    """
     print(f"\nResult of {chosen_numbers[0]} {op_symb} {chosen_numbers[1]} = {result}")
     print(f"\nThe target number is {target_number} ")
 
 
 def ask_continue():
+    """
+    This function asks the user if they want to continue.
+    If not the program ends.
+    :return: boolean
+    """
     while True:
         input_choice = input("Do you want to continue? y/n: ").lower().strip()
         if input_choice == 'y':
@@ -72,6 +109,9 @@ def ask_continue():
 
 
 def main():
+    """
+    This is the main function.
+    """
     target = generate_target_number()
     list_balance_numbers = generate_balance_numbers()
     print(f"\nThe target number is {target}  <======")
