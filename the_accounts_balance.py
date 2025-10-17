@@ -83,29 +83,26 @@ def generate_balance_numbers():
     and add it to a list of balance numbers.
     :return: the list of balance numbers.
     """
-    list_of_balance_numbers = [random.randint(1,10),
-                               random.randint(1,10),
-                               25, 50, 75, 100]
-    return list_of_balance_numbers
+    return [random.randint(1,10),random.randint(1,10),25, 50, 75, 100]
 
 
-def user_number_choice(list_of_balance_numbers):
+def user_number_choice(balance_numbers):
     """
     This function asks the user to choose 2 number of balance numbers and
     check if they are valid.
-    :param list_of_balance_numbers: the actual list of balance numbers.
+    :param balance_numbers: the actual list of balance numbers.
     :return: the choice of the user.
     """
     while True:
         try:
-            user_input = input(f"Which number would you like to balance? choose 2 in {list_of_balance_numbers} ").split()
+            user_input = input(f"Which number would you like to balance? choose 2 in {balance_numbers} ").split()
             chosen_numbers = [int(num) for num in user_input]
-            if len(chosen_numbers) == 2 and all(num in list_of_balance_numbers for num in chosen_numbers):
+            if len(chosen_numbers) == 2 and all(num in balance_numbers for num in chosen_numbers):
                 for num in chosen_numbers:
-                    list_of_balance_numbers.remove(num)
-                return chosen_numbers, list_of_balance_numbers
+                    balance_numbers.remove(num)
+                return chosen_numbers
             else:
-                print(f"Invalid choice. Please choose 2 numbers from {list_of_balance_numbers}.")
+                print(f"Invalid choice. Please choose 2 numbers from {balance_numbers}.")
         except ValueError:
             print("Please enter valid integers separated by space.")
 
@@ -130,19 +127,26 @@ def choose_operator():
             print("Please enter a valid operator.")
 
 
-def calculate_operation(chosen_numbers, cal_operator, list_of_balance_numbers):
+def calculate_operation(chosen_numbers, operator_func, balance_numbers):
     """
     This function calculates the operation, returns the result
     and add it to the list of balance numbers.
     :param chosen_numbers: the number chosen by the user.
-    :param cal_operator: the operator chosen by the user.
-    :param list_of_balance_numbers: the actual list of balance numbers.
+    :param operator_func: the operator chosen by the user.
+    :param balance_numbers: the actual list of balance numbers.
     :return: the calculated operation, the updated list of balance numbers.
     """
     x, y = chosen_numbers
-    result = cal_operator(x, y)
-    list_of_balance_numbers.append(result)
-    return result, list_of_balance_numbers
+    try:
+        result = operator_func(x, y)
+        if result < 0 or result != int(result):
+            print("Invalid result: must be positive integer.")
+            return None
+        balance_numbers.append(result)
+        return result
+    except ZeroDivisionError:
+        print("Division by zero is not allowed.")
+        return None
 
 
 def result_display(chosen_numbers, op_symb, result, target_number):
@@ -154,9 +158,10 @@ def result_display(chosen_numbers, op_symb, result, target_number):
     :param target_number: the target number.
     :return: formated strings.
     """
-    print(f"\nResult of {chosen_numbers[0]} {op_symb} {chosen_numbers[1]} = {result}")
-    print(f"\nThe target number is {target_number} ")
-
+    print('-' * 40)
+    print(f"🧮 Result of {chosen_numbers[0]} {op_symb} {chosen_numbers[1]} = {result}")
+    print(f"🎯 The target number is {target_number} ")
+    print('-' * 40)
 
 def ask_continue():
     """
@@ -195,30 +200,35 @@ def main():
     This is the main function.
     """
     target = generate_target_number()
-    list_balance_numbers = generate_balance_numbers()
-    initial_numbers = list_balance_numbers.copy()
-    display_game_state(list_balance_numbers, target)
+    balance_numbers = generate_balance_numbers()
+    initial_numbers = balance_numbers.copy()
+    display_game_state(balance_numbers, target)
 
     # Player loop
     while ask_continue():
 
-        if len(list_balance_numbers) < 2:
+        if len(balance_numbers) < 2:
             print("\nNot enough numbers left to continue. Game over!")
             break
 
-        chosen_numbers, new_list_of_balance_number = user_number_choice(list_balance_numbers)
+        chosen_numbers  = user_number_choice(balance_numbers)
         symbol, chosen_operator = choose_operator()
-        result, updated_list_of_numbers = calculate_operation(chosen_numbers, chosen_operator, new_list_of_balance_number)
+        result = calculate_operation(chosen_numbers, chosen_operator, balance_numbers)
+
+        if result is None:
+            continue
+
         result_display(chosen_numbers, symbol, result, target)
+        display_game_state(balance_numbers, target)
 
         if result == target:
-            print('Congratulations, you got it!')
+            print(f"\n🎉 Congratulations! You reached the target number {target}!")
             break
 
     # Solution
-    show_solution = input("\n💡 Would you like to see the solution?  (y/n): ").lower().strip()
-    if show_solution == 'y':
+    if input("\n💡 Would you like to see the solution?  (y/n): ").lower().strip() == 'y':
         show_bot_solution(initial_numbers, target)
+
     print("\n👋 Thanks for playing! Goodbye!")
 
 
