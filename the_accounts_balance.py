@@ -41,6 +41,42 @@ def compare_solutions(player_steps, bot_steps, target):
         print("🤖 The bot's result is closer to the target.")
 
 
+def get_user_operation(balance_numbers):
+    """
+    This function gets the user inputs numbers + operator,
+    check if they're correct and return them when that's the case.
+    :param balance_numbers: the actual balance numbers.
+    :return: x input, y, input, the symbol of the operator and the operator itself.
+    """
+    operator_map = {
+        '+': operator.add,
+        '-': operator.sub,
+        '*': operator.mul,
+        '/': operator.floordiv
+    }
+
+    while True:
+        user_input = input('Please enter your operation (ex: 100 +25): ').strip()
+        for symbol in operator_map:
+            if symbol in user_input:
+                parts = user_input.split(symbol)
+                if len(parts) == 2:
+                    try:
+                        x = int(parts[0].strip())
+                        y = int(parts[1].strip())
+                        if x in balance_numbers and y in balance_numbers:
+                            balance_numbers.remove(x)
+                            balance_numbers.remove(y)
+                            return x, y, symbol, operator_map[symbol]
+                        else:
+                            print(f"\nNumbers must be in {balance_numbers}. Please try again.")
+                    except ValueError:
+                        print("\nPlease enter a valid number!")
+                break
+        else:
+            print("Invalid Operator ! Please use +, -, *, / ")
+
+
 def display_game_state(balance_numbers, target):
     """
     This function displays the game state with icons.
@@ -122,47 +158,6 @@ def generate_balance_numbers():
     return [random.randint(1,10),random.randint(1,10),25, 50, 75, 100]
 
 
-def user_number_choice(balance_numbers):
-    """
-    This function asks the user to choose 2 number of balance numbers and
-    check if they are valid.
-    :param balance_numbers: the actual list of balance numbers.
-    :return: the choice of the user.
-    """
-    while True:
-        try:
-            user_input = input(f"Which number would you like to balance? choose 2 in {balance_numbers} ").split()
-            chosen_numbers = [int(num) for num in user_input]
-            if len(chosen_numbers) == 2 and all(num in balance_numbers for num in chosen_numbers):
-                for num in chosen_numbers:
-                    balance_numbers.remove(num)
-                return chosen_numbers
-            else:
-                print(f"Invalid choice. Please choose 2 numbers from {balance_numbers}.")
-        except ValueError:
-            print("Please enter valid integers separated by space.")
-
-
-def choose_operator():
-    """
-    This function asks the user to choose an operator and return it.
-    :return: an operator.
-    """
-    operator_map = {
-        '+': operator.add,
-        '-': operator.sub,
-        '*': operator.mul,
-        '/': operator.floordiv
-    }
-
-    while True:
-        user_choice = input('Please choose the operator (+, -, *, /): ')
-        if user_choice in operator_map:
-            return user_choice, operator_map[user_choice]
-        else:
-            print("Please enter a valid operator.")
-
-
 def calculate_operation(chosen_numbers, operator_func, balance_numbers):
     """
     This function calculates the operation, returns the result
@@ -185,17 +180,18 @@ def calculate_operation(chosen_numbers, operator_func, balance_numbers):
         return None
 
 
-def result_display(chosen_numbers, op_symb, result, target_number):
+def result_display(x, y, op_symb, result, target_number):
     """
     This function displays the result
-    :param chosen_numbers: the number chosen by the user.
+    :param x: the first number.
+    :param y: the second number.
     :param op_symb: the operator symbol chosen by the user.
     :param result: the result of the calculation.
     :param target_number: the target number.
     :return: formated strings.
     """
     print('-' * 40)
-    print(f"🧮 Result of {chosen_numbers[0]} {op_symb} {chosen_numbers[1]} = {result}")
+    print(f"🧮 Result of {x} {op_symb} {y} = {result}")
     print(f"🎯 The target number is {target_number} ")
     print('-' * 40)
 
@@ -248,15 +244,14 @@ def main():
             print("\nNot enough numbers left to continue. Game over!")
             break
 
-        chosen_numbers  = user_number_choice(balance_numbers)
-        symbol, chosen_operator = choose_operator()
-        result = calculate_operation(chosen_numbers, chosen_operator, balance_numbers)
+        x, y, symbol, chosen_operator = get_user_operation(balance_numbers)
+        result = calculate_operation([x, y], chosen_operator, balance_numbers)
 
         if result is None:
             continue
 
-        player_steps.append((chosen_numbers[0], symbol, chosen_numbers[1], result))
-        result_display(chosen_numbers, symbol, result, target)
+        player_steps.append((x, symbol, y, result))
+        result_display(x, y, symbol, result, target)
         display_game_state(balance_numbers, target)
 
         if result == target:

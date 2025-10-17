@@ -10,6 +10,7 @@ Un bot *'intelligent'* peut également proposer une solution optimale.
 - **Calculs successifs** avec mise à jour des nombres disponibles
 - **Détection automatique de victoire ou impossibilité de continuer**
 - **Suggestion de solution** par un bot utilisant une approche récursive
+
 ### 🧰 Technologies utilisées
 - **Python 3**
 - **Modules standards** : random, operator, itertools
@@ -21,8 +22,7 @@ Un bot *'intelligent'* peut également proposer une solution optimale.
 - **main()** : point d’entrée du jeu
 - **generate_target_number()** : génère le nombre cible
 - **generate_balance_numbers()** : génère les nombres disponibles
-- **user_number_choice()** : sélection de deux nombres par le joueur
-- **choose_operator()** : choix de l’opérateur
+- **get_user_operation()** : prend en input l'opération entière de l'utilisateur
 - **calculate_operation()** : exécute l’opération et met à jour la liste
 - **bot_solver()** : algorithme de résolution automatique
 - **show_bot_solution()** : affiche la solution du bot
