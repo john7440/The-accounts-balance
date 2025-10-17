@@ -5,6 +5,42 @@ import random
 import operator
 import itertools
 
+
+def compare_solutions(player_steps, bot_steps, target):
+    """
+    Compare the player's steps with the bot's solution.
+    :param target: the target number.
+    :param player_steps: list of player's operations.
+    :param bot_steps: list of bot's operations.
+    """
+    print("\nComparison between your solution and the bot's one:")
+    print("-" * 40)
+    print("👤 Your steps:")
+    for step in player_steps:
+        x, symb, y, result = step
+        print(f"-> {x} {symb} {y} = {result}")
+    print("\n🤖 Bot's steps:")
+    for step in bot_steps:
+        x, symb, y, result = step
+        print(f"-> {x} {symb} {y} = {result}")
+    print("-" * 40)
+
+    # Compare final results
+    player_final = player_steps[-1][3] if player_steps else None
+    bot_final = bot_steps[-1][3] if bot_steps else None
+
+    print(f"\n🎯 Target: {target}")
+    print(f"👤 Your final result: {player_final}")
+    print(f"🤖 Bot's final result: {bot_final}")
+
+    if player_final == bot_final:
+        print("✅ You matched the bot's result!")
+    elif abs(player_final - target) < abs(bot_final - target):
+        print("👏 Your result is closer! You Won!")
+    else:
+        print("🤖 The bot's result is closer to the target.")
+
+
 def display_game_state(balance_numbers, target):
     """
     This function displays the game state with icons.
@@ -201,6 +237,7 @@ def main():
     """
     target = generate_target_number()
     balance_numbers = generate_balance_numbers()
+    player_steps = []
     initial_numbers = balance_numbers.copy()
     display_game_state(balance_numbers, target)
 
@@ -218,6 +255,7 @@ def main():
         if result is None:
             continue
 
+        player_steps.append((chosen_numbers[0], symbol, chosen_numbers[1], result))
         result_display(chosen_numbers, symbol, result, target)
         display_game_state(balance_numbers, target)
 
@@ -227,7 +265,8 @@ def main():
 
     # Solution
     if input("\n💡 Would you like to see the solution?  (y/n): ").lower().strip() == 'y':
-        show_bot_solution(initial_numbers, target)
+        bot_steps = bot_solver(initial_numbers, target)
+        compare_solutions(player_steps, bot_steps, target)
 
     print("\n👋 Thanks for playing! Goodbye!")
 
