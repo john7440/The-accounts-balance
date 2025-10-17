@@ -5,6 +5,18 @@ import random
 import operator
 import itertools
 
+def display_game_state(balance_numbers, target):
+    """
+    This function displays the game state with icons.
+    :param balance_numbers: the balance numbers.
+    :param target: the target number.
+    :return: a formated display.
+    """
+    print("\n" + "-" * 40)
+    print(f"🎯 Target number: {target}")
+    print(f"🔢 Current numbers: {balance_numbers}")
+    print("-" * 40)
+
 
 def bot_solver(numbers, target):
     """
@@ -21,6 +33,7 @@ def bot_solver(numbers, target):
         '/': operator.floordiv
     }
 
+    # float('inf') create a float that represent infinity
     best_diff = float('inf')
     best_path = None
 
@@ -52,7 +65,7 @@ def bot_solver(numbers, target):
                     continue
 
     recursive_function(numbers, [])
-    return best_path
+    return best_path if best_path is not None else []
 
 
 def generate_target_number():
@@ -155,7 +168,7 @@ def ask_continue():
         if input_choice == 'y':
             return True
         else:
-            print('You ended the program! See you next time!')
+            print('You are quitting... See you next time!')
             return False
 
 
@@ -182,20 +195,29 @@ def main():
     """
     target = generate_target_number()
     list_balance_numbers = generate_balance_numbers()
-    print(f"\nThe target number is {target}  <======")
-    print(f"Initial balance numbers: {list_balance_numbers}")
+    display_game_state(list_balance_numbers, target)
 
     # Player loop
     while ask_continue():
+
+        if len(list_balance_numbers) < 2:
+            print("\nNot enough numbers left to continue. Game over!")
+            break
+
         chosen_numbers, new_list_of_balance_number = user_number_choice(list_balance_numbers)
         symbol, chosen_operator = choose_operator()
         result, updated_list_of_numbers = calculate_operation(chosen_numbers, chosen_operator, new_list_of_balance_number)
         result_display(chosen_numbers, symbol, result, target)
 
+        if result == target:
+            print('Congratulations, you got it!')
+            break
+
     # Solution
     show_solution = input("\n💡 Would you like to see the solution?  (y/n): ").lower().strip()
     if show_solution == 'y':
         show_bot_solution(list_balance_numbers, target)
+    print("\n👋 Thanks for playing! Goodbye!")
 
 
 if __name__=='__main__':
