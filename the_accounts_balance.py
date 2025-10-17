@@ -35,9 +35,9 @@ def bot_solver(numbers, target):
 
     # float('inf') create a float that represent infinity
     best_diff = float('inf')
-    best_path = None
+    best_path = []
 
-    def recursive_function(nums, path):
+    def recursive_solve(nums, path):
         """
         This recursive function is used to solve the equation with
         combinations from itertools.
@@ -45,11 +45,12 @@ def bot_solver(numbers, target):
         :param path: a list of combinations.
         """
         nonlocal best_diff, best_path
+
         if len(nums) == 1:
             difference = abs(nums[0] - target)
             if difference < best_diff:
                 best_diff = difference
-                best_path = path
+                best_path = path.copy()
             return
 
         for x,y in itertools.combinations(nums, 2):
@@ -60,12 +61,12 @@ def bot_solver(numbers, target):
                         continue
                     new_nums = [n for n in nums if n != x and n != y] + [result]
                     new_path = path + [(x, symb, y, result)]
-                    recursive_function(new_nums, new_path)
+                    recursive_solve(new_nums, new_path)
                 except ZeroDivisionError:
                     continue
 
-    recursive_function(numbers, [])
-    return best_path if best_path is not None else []
+    recursive_solve(numbers, [])
+    return best_path
 
 
 def generate_target_number():
@@ -165,11 +166,11 @@ def ask_continue():
     """
     while True:
         input_choice = input("Do you want to continue? y/n: ").lower().strip()
-        if input_choice == 'y':
-            return True
-        else:
+        if input_choice == 'n':
             print('You are quitting... See you next time!')
             return False
+        elif input_choice == 'y':
+            return True
 
 
 def show_bot_solution(list_of_number, target):
@@ -181,7 +182,7 @@ def show_bot_solution(list_of_number, target):
     """
     solution = bot_solver(list_of_number, target)
     if solution:
-        print("\n🤖 Bot's suggested solution:")
+        print(f"\n🎯 The target number is: {target}\n🤖 Bot's suggested solution: ")
         for step in solution:
             x, symb, y, result = step
             print(f"-> {x} {symb} {y} = {result}")
@@ -195,6 +196,7 @@ def main():
     """
     target = generate_target_number()
     list_balance_numbers = generate_balance_numbers()
+    initial_numbers = list_balance_numbers.copy()
     display_game_state(list_balance_numbers, target)
 
     # Player loop
@@ -216,7 +218,7 @@ def main():
     # Solution
     show_solution = input("\n💡 Would you like to see the solution?  (y/n): ").lower().strip()
     if show_solution == 'y':
-        show_bot_solution(list_balance_numbers, target)
+        show_bot_solution(initial_numbers, target)
     print("\n👋 Thanks for playing! Goodbye!")
 
 
